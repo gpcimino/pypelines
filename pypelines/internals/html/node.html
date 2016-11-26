@@ -1,0 +1,33 @@
+<html>
+<body>
+    <h1>{{ node.name() }}</h1>
+
+    <h2>Links</h2>
+    {% if node.is_root() is sameas false  %}
+        Father: <a href="/query/{{node.father().dinasty()}}">{{node.father().name()}}</a>
+    {% else %}
+        This is root node
+    {% endif %}
+    <br/>
+    Childs: 
+    {% for c in node.childs() %}
+        <a href="/query/{{c.dinasty()}}">{{c.name()}}</a>&nbsp;
+    {% endfor %}
+    <br/>
+    <a href="/structure">Structure</a>
+    <br/>
+
+    <h2>Data</h2>
+    Currently {{node.cache.qsize()}} element in cache:<br/>
+    {% for c in node.cache_iter() %}
+        Data received on {{c[0]}}:<br/>
+        <textarea name="Text1" cols="40" rows="5">{{c[1]}}</textarea><br/>
+        <br/>
+    {% endfor %}
+    <hr/>
+
+
+
+
+</body>        
+</html>
