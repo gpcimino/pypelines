@@ -3,7 +3,7 @@ Quick Start
 
 Pypelines is a simple Python framework to model processing as a pipelines. 
 Say you want to execute the classic words count problem grabbing a file from an HTTP server and send the number of word on stdout. 
-You can solve it with pypelines in basically *two lines* (if we exclude imports):
+You can solve it with pypelines with *two lines* (if we exclude imports):
 
 
 ```python
