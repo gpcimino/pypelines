@@ -12,23 +12,22 @@ from fib import fib
 def compute_fib(tup):
     [n, fib_of_n] = json.loads(tup.strip())
     new_fib_of_n = fib(n)
-    return json.dumps((n, new_fib_of_n))
+    return "Executed slow HTTP get and computed fibonacci(" + str(n) + ")=" + str(new_fib_of_n)
 
 def main():
-    """Demostrate that for I/O-bound operation python interpreter release the GIL.
-    The idea is to implement using pypelines two operations: one slow I/O-bound communication
+    """Demostrate that for I/O-bound operation python interpreter releases the GIL.
+    The idea is to implement two operations using pypelines: one slow I/O-bound communication
     followed by one slow CPU-bound computation.
 
     To emulate an inefficient I/O-bound communication we will use an HTTP GET to an external
     web server which will compute very inefficiently Fibonacci value fib(n):
     HTTPClient("http://127.0.0.1:12345/fib/32").
-    On my workstation is used n=32.
-    Note that to run the web server users need to run 'python fib_web.py' in a second terminal.
+    To run the web server execute 'python fib_web.py' in a second shell.
 
     To emulate a CPU-bound long running calculation we will re-compute fib(n) with the same
     value of n: Map(compute_fib).
 
-    Clearly this is a toy example completely useless, but it is easy to note that:
+    Clearly this is a useless example, but it is easy to note that:
 
     1. if we run this pypeline synchronously, we get as total time approximately
     the sum of the duration of the two operations.

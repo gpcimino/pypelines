@@ -28,6 +28,7 @@ class HTTPClient(DAGNode):
         if req.status_code == 200:
             for line in req.iter_lines():
                 if line:
+                    #todo: handling encoding properly here
                     self.forward_data(str(line))
             self.forward_completed()
         else:

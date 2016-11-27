@@ -1,3 +1,5 @@
+import logging
+
 from ..internals.dag import DAGNode
 
 
@@ -23,6 +25,7 @@ class TextFile(DAGNode):
 
 
     def on_data(self, data):
+        log = logging.getLogger(__name__)
         if not hasattr(self, '_fp'):
             self._ctr = 0
             self._fp = open(str(self._filepath), "w", encoding=self._encoding)
@@ -31,13 +34,14 @@ class TextFile(DAGNode):
         self._ctr += 1
         self._fp.write(str(data) + "\n")
         if self._ctr % 1000 == 0:
-            self.log(str(self._filepath) + "==>" + str(self._ctr))
+            log.debug(str(self._filepath) + "==>" + str(self._ctr))
 
     def on_completed(self, data=None):
-        self.log("ready to close " + str(self._filepath))
+        log = logging.getLogger(__name__)
+        log.debug("ready to close " + str(self._filepath))
         if hasattr(self, '_fp') and not self._fp is None:
             self._fp.close()
-            self.log("closed " + str(self._filepath))
+            log.debug("closed " + str(self._filepath))
         self.forward_completed(data)
 
 
@@ -53,7 +57,6 @@ class TextFile(DAGNode):
     def __setstate__(self, state):
         """ This is called while unpickling. """
         self.__dict__.update(state)
-        
 
 
 #https://github.com/timdelbruegger/freecopter/blob/master/src/python3/sensors/gps_polling_thread.py
