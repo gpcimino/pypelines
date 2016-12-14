@@ -30,7 +30,7 @@ class TCPClientStream(DAGNode):
             try:
                 log.info("Opening connection TCP to " +  self.address_str())
                 self._sock = socket(AF_INET, SOCK_STREAM)
-                self._sock.timeout(self._timeout_sec)
+                self._sock.settimeout(self._timeout_sec)
                 try:
                     self._sock.connect((self._address, self._port))
                     log.info("Connection to " +  self.address_str() + " is open")
