@@ -5,6 +5,8 @@ from pypelines.internals.aslist import AsList
 from pypelines.internals.map import Map
 from pypelines.internals.filter import Filter
 from pypelines.internals.store_and_assert import StoreAndAssert
+from pypelines.internals.distinct import Distinct
+from pypelines.internals.sort import Sort
 
 
 class TestDAG(unittest.TestCase):
@@ -72,6 +74,42 @@ class TestDAG(unittest.TestCase):
 
         producer.add_child(consumer)
         producer.run()
+
+    def test_distinct(self):
+        result = []
+        wf = Iterable([1, 2, 3]) | Distinct() | AsList(result)
+        wf.run()
+        self.assertEqual([1, 2, 3], result)
+
+    def test_distinct_two_elements_are_same(self):
+        result = []
+        wf = Iterable([1, 2, 3, 2]) | Distinct() | AsList(result)
+        wf.run()
+        self.assertEqual([1, 2, 3], result)
+
+    def test_distincts_tuples(self):
+        result = []
+        wf = Iterable([(1, "abc"), (2, "abc"), (3, "ccc"), (1, "abc"), (1, "qqq")]) | Distinct() | AsList(result)
+        wf.run()
+        self.assertEqual(sorted([(1, "abc"), (2, "abc"), (3, "ccc"), (1, "qqq")]), sorted(result))
+
+    def test_distinct2(self):
+        result = []
+        wf = Iterable([("2016-01-01T10:00:05", 100), ("2016-01-01T10:00:05", 101)]) | Distinct() | AsList(result)
+        wf.run()
+        self.assertEqual(sorted([("2016-01-01T10:00:05", 100), ("2016-01-01T10:00:05", 101)]), sorted(result))
+
+    def test_sort(self):
+        result = []
+        wf = Iterable([1, 3, 2, 4]) | Sort() | AsList(result)
+        wf.run()
+        self.assertEqual([1, 2, 3, 4], result)
+
+    def test_sort_non_distinct(self):
+        result = []
+        wf = Iterable([1, 3, 2, 4, 2, 2]) | Sort() | AsList(result)
+        wf.run()
+        self.assertEqual([1, 2, 2, 2, 3, 4], result)
 
 if __name__ == "__main__":
     unittest.main()

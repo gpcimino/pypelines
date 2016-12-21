@@ -1,5 +1,6 @@
 from .dag import DAGNode
-import inspect
+
+#from pickablelambda import LambdaProxy 
 
 class Map(DAGNode):
     def __init__(self, func):
