@@ -1,11 +1,13 @@
+from pickleablelambda import pickleable
+
 from .dag import DAGNode
 
 class MapWithState(DAGNode):
     #lambda s: key selection, lambda s: value selection, lambda key, old, new: new value selection
     def __init__(self, init_value_func, new_value_func):
         super().__init__()
-        self._init_value_func = init_value_func
-        self._new_value_func = new_value_func
+        self._init_value_func = pickleable(init_value_func)
+        self._new_value_func = pickleable(new_value_func)
         self._state = {}
 
     def on_data(self, data):

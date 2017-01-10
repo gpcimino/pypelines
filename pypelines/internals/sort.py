@@ -1,10 +1,12 @@
+from pickleablelambda import pickleable
+
 from .dag import DAGNode
 
 class Sort(DAGNode):
     def __init__(self, key_func=None, reverse=False):
         super().__init__()
         self._store = []
-        self._key_func = key_func
+        self._key_func = pickleable(key_func)
         self._reverse = reverse
 
     def on_data(self, data):
