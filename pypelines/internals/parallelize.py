@@ -1,5 +1,5 @@
 import copy
-
+from pickleablelambda import pickleable
 
 from .dag import DAGNode
 from .spawn_process import SpawnProcess
@@ -8,7 +8,7 @@ class Parallelize(DAGNode):
 
     def __init__(self, split_func):
         super().__init__()
-        self._split_func = split_func
+        self._split_func = pickleable(split_func)
         self._template = None #pypeline.root()
         self._parallel_jobs = {}
         self._collector = None

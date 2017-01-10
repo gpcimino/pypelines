@@ -1,3 +1,5 @@
+from pickleablelambda import pickleable
+
 from .dag import DAGNode
 
 #from pickablelambda import LambdaProxy 
@@ -5,7 +7,7 @@ from .dag import DAGNode
 class Map(DAGNode):
     def __init__(self, func):
         super().__init__()
-        self._func = func
+        self._func = pickleable(func)
 
     def on_data(self, data):
         res = self._func(data)

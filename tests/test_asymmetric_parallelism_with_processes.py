@@ -29,7 +29,7 @@ class TestAsymmetricParallelismWithProcesses(unittest.TestCase):
         #possible solution is to hook the import of pickle im multiprocessing lib
         #and substitute with dill.
         #See: #http://chimera.labs.oreilly.com/books/1230000000393/ch10.html#_solution_180
-        workflow = Iterable(data) | SpawnProcess() | Map(add100) | StoreAndPickle()
+        workflow = Iterable(data) | SpawnProcess() | Map(lambda x: x+100) | StoreAndPickle()
         workflow.run()
 
         #workflow ref to StoreAndPickle() instace that is the only leaf of the DAG
