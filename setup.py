@@ -32,6 +32,7 @@ if __name__ == '__main__':
           'Jinja2',
           'CherryPy',
           'pickleablelambda',
+          'requests'
         ],
 
         dependency_links=['https://github.com/gpcimino/pickleablelambda/archive/master.zip#egg=pickleablelambda-0.1.0']
