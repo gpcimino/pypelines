@@ -1,9 +1,11 @@
+from pickleablelambda import pickleable
+
 from .dag import DAGNode
 
 class Filter(DAGNode):
     def __init__(self, func=None):
         super().__init__()
-        self._func = func
+        self._func = pickleable(func)
 
     def on_data(self, data):
         if self._func(data):
