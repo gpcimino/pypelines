@@ -27,4 +27,13 @@ if __name__ == '__main__':
 
         # Homepage url for the package
         #url='http://...',
+
+        install_requires=[
+          'Jinja2',
+          'CherryPy',
+          'pickleablelambda',
+        ],
+
+        dependency_links=['https://github.com/gpcimino/pickleablelambda/archive/master.zip#egg=pickleablelambda-0.1.0']
+
     )
