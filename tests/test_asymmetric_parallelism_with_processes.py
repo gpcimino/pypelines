@@ -71,6 +71,16 @@ class TestAsymmetricParallelismWithProcesses(unittest.TestCase):
         self.assertEqual(async_branch1.load(), [d+100 for d in data])
         self.assertEqual(async_branch2.load(), [d+200 for d in data])
 
+    def test_lambda_with_func_import(self):
+        data = [1, 2, 3, 4, 5]
+
+        workflow = Iterable(data) | SpawnProcess() | Map(lambda x: add100(x)) | StoreAndPickle()
+        workflow.run()
+
+        #workflow ref to StoreAndPickle() instace that is the only leaf of the DAG
+        actual = workflow.load()
+        self.assertEqual(actual, [d+100 for d in data])        
+
 if __name__ == "__main__":
     unittest.main()
 

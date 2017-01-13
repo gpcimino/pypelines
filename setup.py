@@ -31,10 +31,10 @@ if __name__ == '__main__':
         install_requires=[
           'Jinja2',
           'CherryPy',
-          'pickleablelambda',
+          #'pickleablelambda'
           'requests'
         ],
 
-        dependency_links=['https://github.com/gpcimino/pickleablelambda/archive/master.zip#egg=pickleablelambda-0.1.0']
+        #dependency_links=['https://github.com/gpcimino/pickleablelambda/archive/master#egg=pickleablelambda']
 
     )

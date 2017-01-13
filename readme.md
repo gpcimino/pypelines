@@ -92,6 +92,9 @@ Install
 
 Install from github:
 
+Prerequisites: install `pip install https://github.com/gpcimino/pickleablelambda/archive/master.zip`
+
+
 Run `pip install git+https://github.com/gpcimino/pypelines.git@master`
 
 Install in development mode:
