@@ -3,7 +3,7 @@ import sys
 import time
 from datetime import datetime
 import threading
-
+import warnings
 
 
 import traceback
@@ -77,7 +77,7 @@ class DAGNode():
     
     #deprecated
     def __truediv__(self, other):
-        print("Division operator is deprecated, use pipe |", file=sys.stderr)
+        warnings.warn("Division operator is deprecated, use pipe |")
         traceback.print_stack()
         #ensure head of other dag is attached to father node
         other_root = other.root()

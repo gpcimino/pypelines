@@ -2,8 +2,10 @@ import unittest
 import socket
 import threading
 import os
-from pypelines.internals.aslist import AsList
-from pypelines.io.tcp_client_stream import TCPClientStream
+
+
+from pypelines import AsList
+from pypelines.io import TCPClientStream
 
 
 class TestTCPClinetStream(unittest.TestCase):

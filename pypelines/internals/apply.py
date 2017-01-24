@@ -2,7 +2,6 @@ from pickleablelambda import pickleable
 
 from .dag import DAGNode
 
-
 class Apply(DAGNode):
     def __init__(self, on_data=None, on_completed=None, on_error=None):
         super().__init__()

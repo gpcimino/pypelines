@@ -1,10 +1,6 @@
 import unittest
 
-from pypelines.internals.spawn_process import SpawnProcess
-from pypelines.internals.iterable import Iterable
-from pypelines.internals.map import Map
-from pypelines.internals.store_and_pickle import StoreAndPickle
-
+from pypelines import SpawnProcess, Iterable, Map, StoreAndPickle
 
 def add100(n):
     return n + 100
@@ -79,7 +75,7 @@ class TestAsymmetricParallelismWithProcesses(unittest.TestCase):
 
         #workflow ref to StoreAndPickle() instace that is the only leaf of the DAG
         actual = workflow.load()
-        self.assertEqual(actual, [d+100 for d in data])        
+        self.assertEqual(actual, [d+100 for d in data])
 
 if __name__ == "__main__":
     unittest.main()

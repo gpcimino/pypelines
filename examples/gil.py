@@ -2,11 +2,8 @@ import time
 import os
 import json
 
-from pypelines.internals.map import Map
-from pypelines.internals.stdout import StdOut
-from pypelines.internals.repeat import Repeat
-from pypelines.io.http_client import HTTPClient
-from pypelines.internals.spawn_thread import SpawnThread
+from pypelines import Map, StdOut, Repeat, SpawnThread
+from pypelines.io import HTTPClient
 from fib import fib
 
 def compute_fib(tup):

@@ -8,11 +8,8 @@ You can solve it with pypelines with *two lines* (if we exclude imports):
 
 
 ```python
-from pypelines.internals.map import Map
-from pypelines.internals.filter import Filter
-from pypelines.internals.sum import Sum
-from pypelines.internals.stdout import StdOut
-from pypelines.io.http_client import HTTPClient
+from pypelines import Map, Filter, Sum, StdOut
+from pypelines.io import HTTPClient
 
 workflow = HTTPClient('http://www.gutenberg.org/cache/epub/1232/pg1232.txt', readlines=True) | Filter(lambda line: line != "") | Map(lambda line: line.split(' ')) | Map(lambda words: len(words))  | Sum() | StdOut()
 workflow.run()
@@ -31,16 +28,8 @@ For instance let's say we want to execute the word count as above, but we want a
 Pypelines allow us to do it reading the file only once:
 
 ```python
-from pypelines.internals.map import Map
-from pypelines.internals.filter import Filter
-from pypelines.internals.flat_map import FlatMap
-from pypelines.internals.sum import Sum
-from pypelines.internals.stdout import StdOut
-from pypelines.internals.sort import Sort
-from pypelines.internals.head import Head
-from pypelines.internals.count_by_key import CountByKey
-from pypelines.io.http_client import HTTPClient
-from pypelines.io.textfile import TextFile
+from pypelines import Map, Filter, Sum, StdOut, CountByKey, FlatMap, Sort, Head
+from pypelines.io import HTTPClient, TextFile
 
 
 workflow = HTTPClient('http://www.gutenberg.org/cache/epub/1232/pg1232.txt', readlines=True) | Filter(lambda line: line != "")

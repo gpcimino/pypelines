@@ -1,17 +1,23 @@
 from .dag import DAGNode
 
 class Assert(DAGNode):
-    def __init__(self, value):
+
+    def __init__(self, test_case, expected, assert_method="assertEqual", \
+    ignore_on_completed_data=True, assert_params=None):
         super().__init__()
-        self._value = value
-        self.list = []
+        self._expected = expected
+        self._test_case = test_case
+        self._assert_method = assert_method
+        self._ignore_on_completed_data = ignore_on_completed_data
+        self._assert_params = {} if assert_params is None else assert_params
+        self._actual = []
 
     def on_data(self, data):
-        self.list.append(data)
+        self._actual.append(data)
+
 
     def on_completed(self, data=None):
-        if self.list != self._value:
-            raise Exception("DAG assert failed:" + str(self.list) + " != " + str(self._value))
-        else:
-            #print("OK: " + str(self.list) + " != " + str(self._value))
-            pass
+        if not self._ignore_on_completed_data:
+            self._actual.append(data)
+        _assert = getattr(self._test_case, self._assert_method)
+        _assert(self._expected, self._actual, **self._assert_params)
