@@ -1,10 +1,7 @@
 import unittest
 
-from pypelines.internals.iterable import Iterable
-from pypelines.internals.map import Map
-from pypelines.internals.parallelize import Parallelize
-from pypelines.internals.join import Join
-from pypelines.internals.store_and_pickle import StoreAndPickle
+from pypelines import Iterable, Map, Parallelize, Join, StoreAndPickle
+
 
 def add100(n):
     return n + 100

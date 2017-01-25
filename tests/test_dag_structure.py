@@ -1,10 +1,6 @@
 import unittest
 
-from pypelines.internals.iterable import Iterable
-from pypelines.internals.map import Map
-from pypelines.internals.filter import Filter
-from pypelines.internals.stdout import StdOut
-from pypelines.internals._assert import Assert
+from pypelines import Iterable, Map, Filter, StdOut, Assert
 
 class TestDagStructure(unittest.TestCase):
 
@@ -52,7 +48,7 @@ class TestDagStructure(unittest.TestCase):
     def test_query_search_for_leaf_on_two_branches(self):
         workflow = Iterable(range(10))
         branch1 = workflow | Map(lambda x: x+1) | StdOut()
-        branch2 = workflow | Filter(lambda x: x > 5) | Assert([6, 7, 8, 9])
+        branch2 = workflow | Filter(lambda x: x > 5) | Assert(self, [6, 7, 8, 9])
 
         self.assertEqual(workflow.query("Iterable/Map/StdOut").name(), "StdOut")
         self.assertEqual(workflow.query("Iterable/Filter/Assert").name(), "Assert")

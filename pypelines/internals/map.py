@@ -2,8 +2,6 @@ from pickleablelambda import pickleable
 
 from .dag import DAGNode
 
-#from pickablelambda import LambdaProxy 
-
 class Map(DAGNode):
     def __init__(self, func):
         super().__init__()

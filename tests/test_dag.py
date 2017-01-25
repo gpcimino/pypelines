@@ -1,12 +1,6 @@
 import unittest
 
-from pypelines.internals.iterable import Iterable
-from pypelines.internals.aslist import AsList
-from pypelines.internals.map import Map
-from pypelines.internals.filter import Filter
-from pypelines.internals.store_and_assert import StoreAndAssert
-from pypelines.internals.distinct import Distinct
-from pypelines.internals.sort import Sort
+from pypelines import Iterable, AsList, Map, Filter, Assert, Distinct, Sort
 
 
 class TestDAG(unittest.TestCase):
@@ -70,16 +64,16 @@ class TestDAG(unittest.TestCase):
 
     def test_on_completed(self):
         producer = Iterable([1, 2, 3])
-        consumer = StoreAndAssert([1, 2, 3, None], self, "assertEqual", ignore_on_completed_data=False)
+        consumer = Assert(self, [1, 2, 3, None], ignore_on_completed_data=False)
 
         producer.add_child(consumer)
         producer.run()
 
     def test_distinct(self):
-        result = []
-        wf = Iterable([1, 2, 3]) | Distinct() | AsList(result)
+        # result = []
+        wf = Iterable([1, 2, 3]) | Distinct() | Assert(self, [1, 2, 3])
         wf.run()
-        self.assertEqual([1, 2, 3], result)
+        # self.assertEqual([1, 2, 3], result)
 
     def test_distinct_two_elements_are_same(self):
         result = []

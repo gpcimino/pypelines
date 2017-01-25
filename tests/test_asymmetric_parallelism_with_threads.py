@@ -1,10 +1,6 @@
 import unittest
 
-from pypelines.internals.spawn_thread import SpawnThread
-from pypelines.internals.iterable import Iterable
-from pypelines.internals.map import Map
-from pypelines.internals.store_and_pickle import StoreAndPickle
-
+from pypelines import SpawnThread, Iterable, Map, StoreAndPickle
 
 def add100(n):
     return n + 100
