@@ -29,10 +29,11 @@ if __name__ == '__main__':
         #url='http://...',
 
         install_requires=[
-          'Jinja2',
-          'CherryPy',
-          #'pickleablelambda'
-          'requests'
+            'Jinja2',
+            'CherryPy',
+            #'pickleablelambda'
+            'requests',
+            'kafka-python'
         ],
 
         #dependency_links=['https://github.com/gpcimino/pickleablelambda/archive/master#egg=pickleablelambda']

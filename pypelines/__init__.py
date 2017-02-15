@@ -26,5 +26,7 @@ from .internals.spawn import *
 from .internals.spawn_process import *
 from .internals.spawn_thread import *
 from .internals.store_and_pickle import *
+from .internals.do import *
+from .internals.stdout import *
 
 

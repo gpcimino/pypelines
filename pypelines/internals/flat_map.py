@@ -4,7 +4,7 @@ from .dag import DAGNode
 import inspect
 
 class FlatMap(DAGNode):
-    def __init__(self, func):
+    def __init__(self, func=lambda x: x):
         super().__init__()
         self._func = pickleable(func)
 

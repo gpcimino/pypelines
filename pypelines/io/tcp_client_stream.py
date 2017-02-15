@@ -89,5 +89,3 @@ class TCPClientStream(DAGNode):
     def on_completed(self, data=None):
         self._close()
         self.forward_completed(data)
-
-    

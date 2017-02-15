@@ -1,12 +1,16 @@
+import time
+import logging
+
 from pickleablelambda import pickleable
 
 from .dag import DAGNode
 
 class Repeat(DAGNode):
-    def __init__(self, stop_condition=None):
+    def __init__(self, stop_condition=None, sleep_sec=5):
         super().__init__()
         self._stop_condition = pickleable(stop_condition)
-        self._num_iteration = 0 #no worries int it will switch to long once it will exceed int max size 
+        self._num_iteration = 0 #no worries! int will switch to long once it will exceed int max size
+        self._sleep_sec = sleep_sec
 
     def add_child(self, child):
         if len(self._childs) > 1:
@@ -18,13 +22,17 @@ class Repeat(DAGNode):
         return self._childs[0]
 
     def produce(self):
+        log = logging.getLogger(__name__)
+        log.debug("Repeat.produce")
         self._num_iteration = 0
         while True:
+            log.debug("Repeat.produce")        
             self._childs[0].produce()
             self._num_iteration += 1
             if self._stop_condition and self._stop_condition(self._num_iteration):
                 self.get_producer().call_forward = True
                 self.forward_completed()
                 break
+            time.sleep(self._sleep_sec)
 
 
