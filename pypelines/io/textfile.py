@@ -58,6 +58,33 @@ class TextFile(DAGNode):
         """ This is called while unpickling. """
         self.__dict__.update(state)
 
+class FlatTextFileReader(DAGNode):
+    def __init__(self):
+        super().__init__()
+        self._encoding = 'utf-8'
+        self._fp = None
+
+    def on_data(self, data):
+        log = logging.getLogger(__name__)
+        try:
+            if self._fp is None:
+                print("open file " + str(data))
+                self._fp = open(str(data))
+            while True:
+                line = self._fp.readline()
+                if not line:
+                    break
+                #print("line " + str(line))
+                self.forward_data(line)
+        except Exception as ex:
+            print("Failure in reading file " + str(data))
+            log.exception("Failure in reading file " + str(data), exc_info=True)
+        finally:
+            self._fp.close()
+            self._fp = None
+
+
+
 
 #https://github.com/timdelbruegger/freecopter/blob/master/src/python3/sensors/gps_polling_thread.py
 #from gpspy3 import gps

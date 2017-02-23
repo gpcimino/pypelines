@@ -26,7 +26,7 @@ class Repeat(DAGNode):
         log.debug("Repeat.produce")
         self._num_iteration = 0
         while True:
-            log.debug("Repeat.produce")        
+            print("Repeat.produce")        
             self._childs[0].produce()
             self._num_iteration += 1
             if self._stop_condition and self._stop_condition(self._num_iteration):
