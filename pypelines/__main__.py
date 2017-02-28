@@ -45,7 +45,7 @@ def main(inputfile, pypelines_variables):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--logconf", nargs="?", default='stdout', help="Logger config file or stdout (default), none to log to /dev/null")
-    parser.add_argument("-e", "--envpar", nargs="?", default=None, help="Name of environment variable containing parameter as name1=value1;name2=value2;...")
+    parser.add_argument("-e", "--envpar", nargs="?", default=None, help="Name of environment variable containing parameter as name1=value1;name2=value2;... as separator (';') use default path separator (e.g. ':' on UNIX, ';' on Windows) ")
     parser.add_argument("-p", "--parameters", nargs="?", default=None, help="List of parameters as name1=value1;name2=value2;...")
 
     parser.add_argument("inputfile", help="pypelines script")
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     variables_cmdline = {}
     variables_env = {}
     if args.parameters is not None:
-        var = args.parameters.split(";")
+        var = args.parameters.split(os.pathsep)
         variables_cmdline = dict(s.split('=') for s in var)
     log.debug("Parameters from cmd line: " + str(variables_cmdline))
 
@@ -78,7 +78,7 @@ if __name__ == '__main__':
         if not var:
             log.fatal("Cannot find environmental variable " + args.envpar + " containing init parameters")
             sys.exit(-1)
-        var = var.split(";")
+        var = var.split(os.pathsep)
         variables_env = dict(s.split('=') for s in var)
     log.debug("Parameters from env variable: " + str(variables_env))
 
