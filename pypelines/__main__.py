@@ -24,8 +24,19 @@ figlet_txt = """
 """
 
 
-def main(inputfile):
+def main(inputfile, pypelines_variables):
     t1 = time.time()
+    # print("----------------------")
+    # print(globals())
+    # print("----------------------")
+    # print(variables)
+    # print("----------------------")
+    # global_and_variables = {**variables, **globals()}
+    # print(global_and_variables)
+    # print("----------------------")
+    # print(global_and_variables['source_path'])
+    # print("----------------------")
+    
     exec(open(inputfile).read(), globals())
     t2 = time.time()
     print(inputfile + " took " + str(t2-t1) + " seconds.")
@@ -34,6 +45,9 @@ def main(inputfile):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--logconf", nargs="?", default='stdout', help="Logger config file or stdout (default), none to log to /dev/null")
+    parser.add_argument("-e", "--envpar", nargs="?", default=None, help="Name of environment variable containing parameter as name1=value1;name2=value2;...")
+    parser.add_argument("-p", "--parameters", nargs="?", default=None, help="List of parameters as name1=value1;name2=value2;...")
+
     parser.add_argument("inputfile", help="pypelines script")
 
     args = parser.parse_args()
@@ -47,10 +61,29 @@ if __name__ == '__main__':
         logging.config.fileConfig(args.logconf)
         loginfostring = "Configure logging from " + args.logconf
 
-
     log = logging.getLogger(__name__)
     print("Ready to start... ")
     print(figlet_txt)
     print(loginfostring)
 
-    main(args.inputfile)
+    variables_cmdline = {}
+    variables_env = {}
+    if args.parameters is not None:
+        var = args.parameters.split(";")
+        variables_cmdline = dict(s.split('=') for s in var)
+    log.debug("Parameters from cmd line: " + str(variables_cmdline))
+
+    if args.envpar is not None:
+        var = os.getenv(args.envpar)
+        if not var:
+            log.fatal("Cannot find environmental variable " + args.envpar + " containing init parameters")
+            sys.exit(-1)
+        var = var.split(";")
+        variables_env = dict(s.split('=') for s in var)
+    log.debug("Parameters from env variable: " + str(variables_env))
+
+    #union param dicts
+    #variables = dict(variables_cmdline, **variables_env)
+    #caution: py3.5 only
+    __vars = {**variables_cmdline, **variables_env} #env overwrite cmdline
+    main(args.inputfile, __vars)
