@@ -26,13 +26,15 @@ class Repeat(DAGNode):
         log.debug("Repeat.produce")
         self._num_iteration = 0
         while True:
-            print("Repeat.produce")        
+            print("Repeat.produce")
+            log.debug("Repeat.produce")
             self._childs[0].produce()
             self._num_iteration += 1
             if self._stop_condition and self._stop_condition(self._num_iteration):
                 self.get_producer().call_forward = True
                 self.forward_completed()
                 break
+            log.debug("sleep " + str(self._sleep_sec))
             time.sleep(self._sleep_sec)
 
 

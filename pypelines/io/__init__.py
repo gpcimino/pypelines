@@ -7,7 +7,3 @@ from .textfile import *
 from .textfile_rotate import *
 from .kafka import KafkaProducer, KafkaConsumer
 
-try:
-    from .kafka_producer  import *
-except:
-    warnings.warn("Cannot import kafka lib")
