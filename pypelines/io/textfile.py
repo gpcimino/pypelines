@@ -1,8 +1,9 @@
 import logging
+import warnings
 
 from ..internals.dag import DAGNode
 
-
+# this class 
 class TextFile(DAGNode):
     def __init__(self, filepath, header=None):
         super().__init__()
@@ -11,6 +12,7 @@ class TextFile(DAGNode):
         self._encoding = 'utf-8'
 
     def produce(self):
+        warnings.warn("this class should be renamed refactored/moved to a TextFileReader class", PendingDeprecationWarning)
         #todo: handle exceptions
         #do not declare file pointer in __init__ to pickle object easily during creation of processes
         self._fp = open(str(self._filepath))
@@ -25,6 +27,7 @@ class TextFile(DAGNode):
 
 
     def on_data(self, data):
+        warnings.warn("this method should be refactored/moved to a TextFileWriter class", PendingDeprecationWarning)
         log = logging.getLogger(__name__)
         if not hasattr(self, '_fp'):
             self._ctr = 0

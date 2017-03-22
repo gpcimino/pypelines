@@ -6,4 +6,4 @@ from .tcp_clilent import *
 from .textfile import *
 from .textfile_rotate import *
 from .kafka import KafkaProducer, KafkaConsumer
-
+from .textfilereader import MultipleTextFileReader, TextFileProducer, FlatMultipleTextFileReader
