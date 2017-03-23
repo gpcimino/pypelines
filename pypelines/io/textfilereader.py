@@ -73,6 +73,7 @@ class FlatMultipleTextFileReader(TextFileReaderBase):
 
     def on_data(self, data):
         log = logging.getLogger(__name__)
+        log.debug("Open file: " + str(data))
         fp = open(str(data))
         while True:
             line = fp.readline()
@@ -80,4 +81,5 @@ class FlatMultipleTextFileReader(TextFileReaderBase):
                 break
             self.forward_data(line)
 
-        fp.close()        
+        fp.close()
+        log.debug("Closed file: " + str(data))
