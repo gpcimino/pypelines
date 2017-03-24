@@ -9,7 +9,7 @@ import warnings
 import traceback
 import types
 import queue
-from .web import run_web_server
+#from .web import run_web_server
 #from .dagnode_async import DAGNodeAsync
 
 class DAGNode():
@@ -137,7 +137,7 @@ class DAGNode():
             if embed_web_server:
                 DAGNode.caching = 1 if cache_size == 0 else cache_size
                 self.init_cache()
-                run_web_server(self, port)
+                #run_web_server(self, port)
             self.produce()
         else:
             self._father.run(embed_web_server, port, cache_size)
