@@ -1,10 +1,11 @@
 import json
 import logging
 import time
-from waiter import wait
+
 from kafka import KafkaProducer as _KafkaProducer
 from kafka import KafkaConsumer as _KafkaConsumer
 from kafka.errors import KafkaError
+#from waiter import wait
 
 from ..internals.dag import DAGNode
 
@@ -26,12 +27,8 @@ class KafkaProducer(DAGNode):
 
     def _bootstrap(self):
         log = logging.getLogger(__name__)
-        # waiter = wait(1) * 2   # exponential backoff 1, 2, 4, 8, ...
-        # waiter <= 5            # set maximum delay   1, 2, 4, 5, 5, 5, ...
         while True:
             try:
-                # if self._producer is not None:
-                #     self._close()
                 self._producer = _KafkaProducer(
                     bootstrap_servers=self._server, \
                     value_serializer=lambda v: json.dumps(v).encode('utf-8'), \
@@ -43,23 +40,11 @@ class KafkaProducer(DAGNode):
                     log.info("Connected to Kafka on " + str(self._server))
                     #connection is open , exit function
                     break
-                time.sleep(self._wait_time_sec)
+                #todo: # waiter = wait(1) * 2   # exponential backoff 1, 2, 4, 8, ...
+                time.sleep(self._wait_time_sec) 
             except Exception as ex:
-                log.warning("cannot connect to kafka due to: " + str(ex))
-                log.warning("Wait " + str(self._wait_time_sec) + " sec before reconnect to kafka")
-
-    def _close(self):
-        log = logging.getLogger(__name__)
-        try:
-            if self._producer is not None:
-                self._producer.close()
-                log.info("Closed connection to kafka")
-        except Exception as ex:
-            log.warning("Cannot close connection to kafka, connection will be re-opened")
-        finally:
-            self._producer = None
-
-
+                log.warning("Cannot connect to kafka due to: " + str(ex) + \
+                    ". Wait " + str(self._wait_time_sec) + " sec before reconnect to kafka")
 
     def on_data(self, data):
         log = logging.getLogger(__name__)
@@ -78,39 +63,62 @@ class KafkaProducer(DAGNode):
                 self._bootstrap()
             log.warning("After message sent failure, try again to send")
 
+    def _close(self):
+        log = logging.getLogger(__name__)
+        try:
+            if self._producer is not None:
+                self._producer.close() #breaks on windows
+                log.info("Closed connection to kafka")
+        except Exception as ex:
+            log.warning("Cannot close connection to kafka, connection will be re-opened")
+        finally:
+            self._producer = None
+
     def on_close(self, data=None):
-        #self._producer.close() #breaks on windows
+        self._close()
         self.forward_completed(data)
 
 
 class KafkaConsumer(DAGNode):
-    def __init__(self, server, topic, group_id=None):
+    def __init__(self, server, topic, group_id=None, start_from_latest_msg=False):
         super().__init__()
         self._server = server
         self._topic = topic
         self._consumer = None
         self._enable_auto_commit = True
         self._group_id = group_id
-        self._start_from_last_msg = False
+        self._start_from_latest_msg = start_from_latest_msg
+        self._wait_time_sec = 5
 
     def _bootstrap(self):
         log = logging.getLogger(__name__)
-        if self._consumer is None:
-            self._consumer = _KafkaConsumer( \
-                self._topic, \
-                bootstrap_servers=self._server, \
-                value_deserializer=lambda v: json.loads(v.decode('utf-8')), \
-                enable_auto_commit=self._enable_auto_commit, \
-                group_id=self._group_id \
-            )
-            log.info("Connection to " + str(self._server) + " opened for topic " + str(self._topic))
+        while True:
+            try:
+                self._consumer = _KafkaConsumer( \
+                    self._topic, \
+                    bootstrap_servers=self._server, \
+                    value_deserializer=lambda v: json.loads(v.decode('utf-8')), \
+                    enable_auto_commit=self._enable_auto_commit, \
+                    group_id=self._group_id \
+                )
+                if not self._consumer._closed:
+                    log.info("Connection to " + str(self._server) + \
+                        " opened for topic " + str(self._topic))
+                    #connection is open, success, exit function
+                    break
+                #todo: # waiter = wait(1) * 2   # exponential backoff 1, 2, 4, 8, ...
+                time.sleep(self._wait_time_sec)
+            except Exception as ex:
+                log.warning("Cannot connect to kafka due to: " + str(ex) + \
+                    ". Wait " + str(self._wait_time_sec) + " sec before reconnect to kafka")
 
-    def consume(self):
+
+    def produce(self):
         log = logging.getLogger(__name__)
         while True:
             self._bootstrap()
             try:
-                if self._start_from_last_msg:
+                if self._start_from_latest_msg:
                     #move to end og the topic
                     self._consumer.poll()
                     self._consumer.seek_to_end()
@@ -124,8 +132,19 @@ class KafkaConsumer(DAGNode):
 
 
     def on_close(self, data=None):
-        #self._consumer.close() #breaks on windows
+        self._close()
         self.forward_completed(data)
+
+    def _close(self):
+        log = logging.getLogger(__name__)
+        try:
+            if self._consumer is not None:
+                self._consumer.close() #breaks on windows
+                log.info("Closed connection to kafka")
+        except Exception as ex:
+            log.warning("Cannot close connection to kafka, connection will be re-opened")
+        finally:
+            self._consumer = None
 
 
     # def produce(self):
