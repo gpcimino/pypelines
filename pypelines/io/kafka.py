@@ -1,6 +1,7 @@
 import json
 import logging
 import time
+from datetime import datetime
 
 from kafka import KafkaProducer as _KafkaProducer
 from kafka import KafkaConsumer as _KafkaConsumer
@@ -11,11 +12,12 @@ from ..internals.dag import DAGNode
 
 
 class KafkaProducer(DAGNode):
-    def __init__(self, server, topic, msg_type):
+    def __init__(self, server, topic, msg_type, msg_producer_identity):
         super().__init__()
         self._server = server
         self._topic = topic
         self._msg_type = msg_type
+        self._msg_producer_identity = msg_producer_identity
 
         self._retries = 5 #default 1
         self._request_timeout_ms = 5000 #default 30000
@@ -51,7 +53,15 @@ class KafkaProducer(DAGNode):
         #here we keep sending (producer.send) until success (break the loop)
         while True:
             try:
-                msg = {"msg" : self._msg_type, "data" : data}
+                msg = { \
+                    "msg_type" : self._msg_type, \
+                    "data" : data, \
+                    "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), \
+                    "source" : self._msg_producer_identity, \
+                    "_links" : { \
+                        "http" : data \
+                    } \
+                }
                 log.debug("Try to send message to kafka " + str(msg))
                 self._producer.send(self._topic, msg)
                 log.debug("Message sent")
