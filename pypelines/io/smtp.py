@@ -25,13 +25,14 @@ class SMTP(DAGNode):
     def send_mail(self, body):
         log = logging.getLogger(__name__)
 
-        if len(self._addresses) == 0:
+        address_list = self.get_server_address()
+        if len(address_list) == 0:
             log.info("Cannot find any destination email address: nothing to do.")
             return
 
-        log.debug("Found dest email: " + str(self._addresses) + "; len=" + str(len(self._addresses)))
+        log.debug("Found dest email: " + str(address_list) + "; len=" + str(len(address_list)))
 
-        for addr in self.get_server_address():
+        for addr in address_list:
             all_mail_addr = [addr]
             try:
                 log.info("Start sending emails...")
