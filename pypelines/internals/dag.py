@@ -74,7 +74,7 @@ class DAGNode():
         other_root = other.root()
         self.add_child(other_root)
         return other
-    
+
     #deprecated
     def __truediv__(self, other):
         warnings.warn("Division operator is deprecated, use pipe |")

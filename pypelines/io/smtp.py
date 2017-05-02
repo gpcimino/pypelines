@@ -19,6 +19,8 @@ class SMTP(DAGNode):
     def on_data(self, data):
         self.send_mail(str(data))
 
+    def get_server_address(self):
+        return self._addresses
 
     def send_mail(self, body):
         log = logging.getLogger(__name__)
@@ -29,7 +31,7 @@ class SMTP(DAGNode):
 
         log.debug("Found dest email: " + str(self._addresses) + "; len=" + str(len(self._addresses)))
 
-        for addr in self._addresses:
+        for addr in self.get_server_address():
             all_mail_addr = [addr]
             try:
                 log.info("Start sending emails...")
