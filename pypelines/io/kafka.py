@@ -12,19 +12,17 @@ from ..internals.dag import DAGNode
 
 
 class KafkaProducer(DAGNode):
-    def __init__(self, server, topic, msg_type, msg_producer_identity):
+    def __init__(self, server, topic, request_timeout_ms=5):
         super().__init__()
         self._server = server
         self._topic = topic
-        self._msg_type = msg_type
-        self._msg_producer_identity = msg_producer_identity
 
         self._retries = 5 #default 1
         self._request_timeout_ms = 5000 #default 30000
         self._reconnect_backoff_ms = 50 #default 50
         self._producer = None
         #self._waiter = wait(1) * 2 <= 30
-        self._wait_time_sec = 5
+        self._wait_time_sec = request_timeout_ms
         self._bootstrap()
 
     def _bootstrap(self):
@@ -53,15 +51,8 @@ class KafkaProducer(DAGNode):
         #here we keep sending (producer.send) until success (break the loop)
         while True:
             try:
-                msg = { \
-                    "msg_type" : self._msg_type, \
-                    "data" : data, \
-                    "timestamp": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), \
-                    "source" : self._msg_producer_identity, \
-                    "_links" : { \
-                        "http" : data \
-                    } \
-                }
+                msg = data
+                msg["timestamp"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
                 log.debug("Try to send message to kafka " + str(msg))
                 self._producer.send(self._topic, msg)
                 log.debug("Message sent")

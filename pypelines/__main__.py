@@ -27,17 +27,6 @@ figlet_txt = """
 
 def main(inputfile, pypelines_variables):
     t1 = time.time()
-    # print("----------------------")
-    # print(globals())
-    # print("----------------------")
-    # print(variables)
-    # print("----------------------")
-    # global_and_variables = {**variables, **globals()}
-    # print(global_and_variables)
-    # print("----------------------")
-    # print(global_and_variables['source_path'])
-    # print("----------------------")
-    
     exec(open(inputfile).read(), globals())
     t2 = time.time()
     print(inputfile + " took " + str(t2-t1) + " seconds.")
@@ -87,4 +76,5 @@ if __name__ == '__main__':
     #variables = dict(variables_cmdline, **variables_env)
     #caution: py3.5 only
     __vars = {**variables_cmdline, **variables_env} #env overwrite cmdline
+    #print(__vars)
     main(args.inputfile, __vars)
