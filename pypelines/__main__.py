@@ -5,16 +5,7 @@ import sys
 import os
 import time
 
-# figlet_txt = """
-# ______                 _ _                 
-# | ___ \               | (_)                
-# | |_/ /   _ _ __   ___| |_ _ __   ___  ___ 
-# |  __/ | | | '_ \ / _ \ | | '_ \ / _ \/ __|
-# | |  | |_| | |_) |  __/ | | | | |  __/\__ \\
-# \_|   \__, | .__/ \___|_|_|_| |_|\___||___/
-#        __/ | |                             
-#       |___/|_|                             
-# """
+
 figlet_txt = """
     ____                   ___                
    / __ \__  ______  ___  / (_)___  ___  _____
@@ -52,9 +43,9 @@ if __name__ == '__main__':
         loginfostring = "Configure logging from " + args.logconf
 
     log = logging.getLogger(__name__)
-    print("Ready to start... ")
-    print(figlet_txt)
-    print(loginfostring)
+    log.info(figlet_txt)
+    log.info("is starting!")
+    log.info(loginfostring)
 
     variables_cmdline = {}
     variables_env = {}
