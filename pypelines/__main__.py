@@ -4,7 +4,7 @@ import argparse
 import sys
 import os
 import time
-
+from configparser import SafeConfigParser
 
 figlet_txt = """
     ____                   ___                
@@ -14,11 +14,20 @@ figlet_txt = """
 /_/    \__, / .___/\___/_/_/_/ /_/\___/____/  
       /____/_/                                
 """
-
+def config2dict(config_file):
+    log.info("Load configs from file:" + str(config_file))
+    confparser = SafeConfigParser(defaults=os.environ) #this is dangerous ==> all sys env var are set up in default section
+    confparser.read(config_file)
+    sections = confparser.sections()
+    sections.append('DEFAULT')
+    variables_cmdline = {s:dict(confparser.items(s)) for s in sections}
+    variables_cmdline = {**variables_cmdline, **dict(confparser.items('DEFAULT'))} #default overwrite variables_cmdline
+    #log.info("Params found in files: " + str(variables_cmdline))
+    return variables_cmdline
 
 def main(inputfile, pypelines_variables):
     t1 = time.time()
-    exec(open(inputfile).read(), globals())
+    exec(open(inputfile).read(), globals()) #todo: fix this
     t2 = time.time()
     print(inputfile + " took " + str(t2-t1) + " seconds.")
 
@@ -27,7 +36,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--logconf", nargs="?", default='stdout', help="Logger config file or stdout (default), none to log to /dev/null")
     parser.add_argument("-e", "--envpar", nargs="?", default=None, help="Name of environment variable containing parameter as name1=value1;name2=value2;... as separator (';') use default path separator (e.g. ':' on UNIX, ';' on Windows) ")
-    parser.add_argument("-p", "--parameters", nargs="?", default=None, help="List of parameters as name1=value1;name2=value2;...")
+    parser.add_argument("-p", "--parameters", nargs="?", default=None, help="List of parameters as name1=value1;name2=value2;... or filepath containing python configparser file")
 
     parser.add_argument("inputfile", help="pypelines script")
 
@@ -50,9 +59,12 @@ if __name__ == '__main__':
     variables_cmdline = {}
     variables_env = {}
     if args.parameters is not None:
-        var = args.parameters.split(os.pathsep)
-        variables_cmdline = dict(s.split('=') for s in var)
-    log.debug("Parameters from cmd line: " + str(variables_cmdline))
+        if os.path.exists(args.parameters):
+            variables_cmdline = config2dict(args.parameters)
+        else:
+            var = args.parameters.split(os.pathsep)
+            variables_cmdline = dict(s.split('=') for s in var)
+    #log.debug("Parameters from cmd line: " + str(variables_cmdline))
 
     if args.envpar is not None:
         var = os.getenv(args.envpar)
@@ -66,6 +78,6 @@ if __name__ == '__main__':
     #union param dicts
     #variables = dict(variables_cmdline, **variables_env)
     #caution: py3.5 only
-    __vars = {**variables_cmdline, **variables_env} #env overwrite cmdline
+    pypelines_pars = {**variables_cmdline, **variables_env} #env overwrite cmdline
     #print(__vars)
-    main(args.inputfile, __vars)
+    main(args.inputfile, pypelines_pars)
