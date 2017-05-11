@@ -1,4 +1,5 @@
 import requests
+import logging
 import urllib.request
 from ..internals.dag import DAGNode
 
@@ -42,6 +43,8 @@ class HTTPClientElement(DAGNode):
         self.on_data = self.on_data_flat if flat else self.on_data_all
 
     def on_data_flat(self, data):
+        log = logging.getLogger(__name__)
+        log.debug("HTTP GET: " + str(data))
         r = requests.get(data)
         if r.status_code == 200:
             for line in r.text.split(self._EOL):

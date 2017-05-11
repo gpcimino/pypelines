@@ -50,7 +50,7 @@ class SMTP(DAGNode):
                 log.info("send emails from: " + str(self._from_address))
                 log.info("send emails to single receiver: " + str(all_mail_addr))
                 log.info("subject: " + str(self._subject))
-                log.info("body: " + str(body))
+                #log.debug("body: " + str(body))
                 server.sendmail(self._from_address, all_mail_addr, msg.as_string())
                 server.quit()
                 log.info("send mail completed without errors")

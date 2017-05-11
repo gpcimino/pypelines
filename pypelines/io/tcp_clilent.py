@@ -61,4 +61,4 @@ class TCPClient(DAGNode):
         log.debug("Ready to send data call on_completed")
         self._close()
         self.forward_completed(data)
-    
+
