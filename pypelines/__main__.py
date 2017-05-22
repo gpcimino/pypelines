@@ -35,8 +35,9 @@ def main(inputfile, pypelines_variables):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-l", "--logconf", nargs="?", default='stdout', help="Logger config file or stdout (default), none to log to /dev/null")
-    parser.add_argument("-e", "--envpar", nargs="?", default=None, help="Name of environment variable containing parameter as name1=value1;name2=value2;... as separator (';') use default path separator (e.g. ':' on UNIX, ';' on Windows) ")
-    parser.add_argument("-p", "--parameters", nargs="?", default=None, help="List of parameters as name1=value1;name2=value2;... or filepath containing python configparser file")
+    parser.add_argument("-e", "--envconfig", nargs="?", default=None, help="Name of environment variable containing parameter as name1=value1;name2=value2;... as separator (';') use default path separator (e.g. ':' on UNIX, ';' on Windows) ")
+    parser.add_argument("-p", "--params", nargs="?", default=None, help="Parameters as name1=value1;name2=value2;... ")
+    parser.add_argument("-c", "--configfile", nargs="?", default=None, help="Config file filepath having Python configparser syntax")
 
     parser.add_argument("inputfile", help="pypelines script")
 
@@ -58,26 +59,50 @@ if __name__ == '__main__':
 
     variables_cmdline = {}
     variables_env = {}
-    if args.parameters is not None:
-        if os.path.exists(args.parameters):
-            variables_cmdline = config2dict(args.parameters)
-        else:
-            var = args.parameters.split(os.pathsep)
-            variables_cmdline = dict(s.split('=') for s in var)
-    #log.debug("Parameters from cmd line: " + str(variables_cmdline))
+    # if args.parameters is not None:
+    #     if os.path.exists(args.parameters):
+    #         variables_cmdline = config2dict(args.parameters)
+    #     else:
+    #         var = args.parameters.split(os.pathsep)
+    #         variables_cmdline = dict(s.split('=') for s in var)
+    # #log.debug("Parameters from cmd line: " + str(variables_cmdline))
 
-    if args.envpar is not None:
-        var = os.getenv(args.envpar)
+    #priority in case of param with same name cmdline, configfile, env var
+    #env var 
+    if args.envconfig is not None:
+        var = os.getenv(args.envconfig)
         if not var:
-            log.fatal("Cannot find environmental variable " + args.envpar + " containing init parameters")
-            sys.exit(-1)
+            log.fatal("Cannot find environmental variable " + args.envconfig + " containing init parameters")
+            sys.exit(1)
         var = var.split(os.pathsep)
         variables_env = dict(s.split('=') for s in var)
-    log.debug("Parameters from env variable: " + str(variables_env))
+        log.debug("Parameters from env variable: " + str(variables_env))
+
+    #config file
+    if args.configfile is not None:
+        if os.path.exists(args.configfile):
+            variables_configfile = config2dict(args.configfile)
+            log.debug("Parameters from config file line: " + str(variables_configfile))
+        else:
+            log.fatal("Cannot find config file on path: " + str(args.configfile))
+            sys.exit(2)
+
+    #cmd line
+    if args.params is not None:
+        try:
+            var = args.params.split(os.pathsep)
+            variables_cmdline = dict(s.split('=') for s in var)
+            log.debug("Parameters from cmd line: " + str(variables_cmdline))
+        except Exception as ex:
+            log.fatal("Cannot parse command line parameters")
+            sys.exit(3)
+
 
     #union param dicts
     #variables = dict(variables_cmdline, **variables_env)
     #caution: py3.5 only
-    pypelines_pars = {**variables_cmdline, **variables_env} #env overwrite cmdline
+    #pypelines_pars = {**variables_cmdline, **variables_env} #env overwrite cmdline
+    pypelines_pars = {**variables_env, **variables_configfile}
+    pypelines_pars = {**pypelines_pars, **variables_cmdline}
     #print(__vars)
     main(args.inputfile, pypelines_pars)

@@ -15,6 +15,7 @@ class SMTP(DAGNode):
         self._server_port = server_port
         self._from_address = from_address
         self._subject = subject
+        self._timeout_sec = 20
 
     def on_data(self, data):
         self.send_mail(str(data))
@@ -38,8 +39,9 @@ class SMTP(DAGNode):
                 log.info("Start sending emails...")
                 log.info("mail server ip:  " + str(self._server_ip))
                 log.info("mail server tcp port: " + str(self._server_port))
+                log.info("mail server tcp connection timeout: " + str(self._timeout_sec))
 
-                server = smtplib.SMTP(self._server_ip, port=self._server_port, timeout=100)
+                server = smtplib.SMTP(self._server_ip, port=self._server_port, timeout=self._timeout_sec)
                 #server.login("assetplanning", "klajsd873jd&^shF")
 
                 msg = MIMEText(body)

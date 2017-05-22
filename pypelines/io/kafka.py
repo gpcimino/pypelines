@@ -125,6 +125,7 @@ class KafkaConsumer(DAGNode):
                     self._consumer.seek_to_end()
                 #start read from stream
                 for message in self._consumer:
+                    log.debug("Received message: " + str(message.value))
                     self.forward_data(message.value)
             except Exception as ex:
                 log.exception("cannot consume from kafka topic " + str(self._topic))

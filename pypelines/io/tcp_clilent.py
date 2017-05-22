@@ -14,14 +14,16 @@ class TCPClient(DAGNode):
         self._encode_string = encode_string
         self._sock = None
         self._buffer_size = buffer_size
+        self._timeout_sec = 20.0
 
     def client_address(self):
         return str(self._address) + ":" + str(self._port)
 
     def _open(self):
         log = logging.getLogger(__name__)
-        log.debug("Trying to open connection to " + self.client_address())
+        log.debug("Trying to open connection to " + self.client_address() + " with timeoout " + str(self._timeout_sec))
         self._sock = socket(AF_INET, SOCK_STREAM)
+        self._sock.settimeout(self._timeout_sec)
         self._sock.connect((self._address, self._port))
         log.debug("Connection opened")
 
