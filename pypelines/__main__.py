@@ -82,7 +82,7 @@ if __name__ == '__main__':
     if args.configfile is not None:
         if os.path.exists(args.configfile):
             variables_configfile = config2dict(args.configfile)
-            log.debug("Parameters from config file line: " + str(variables_configfile))
+            #log.debug("Parameters from config file line: " + str(variables_configfile))
         else:
             log.fatal("Cannot find config file on path: " + str(args.configfile))
             sys.exit(2)

@@ -23,11 +23,9 @@ class Repeat(DAGNode):
 
     def produce(self):
         log = logging.getLogger(__name__)
-        log.debug("Repeat.produce")
         self._num_iteration = 0
         while True:
-            print("Repeat.produce")
-            log.debug("Repeat.produce")
+            log.debug("Enter in produce infinite loop")
             self._childs[0].produce()
             self._num_iteration += 1
             if self._stop_condition and self._stop_condition(self._num_iteration):
