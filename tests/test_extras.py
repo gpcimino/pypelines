@@ -58,7 +58,28 @@ class TestConfig(unittest.TestCase):
         c=%(a)s
         ''')
         d = config2dict(config, interpolate=True)
-        self.assertEqual(d, {'S1__a' : 'b', 'S1__c' : 'b'})        
+        self.assertEqual(d, {'S1__a' : 'b', 'S1__c' : 'b'})
+
+    def test_env_var(self):
+        config = io.StringIO('''
+        [S1]
+        a=b
+        c=%(test_pypelines)s
+        ''')
+        import os
+        os.environ["test_pypelines"] = "123"
+        d = config2dict(config, interpolate=True, interpolate_envvar=["test_pypelines"])
+        self.assertEqual(d, {'S1__a' : 'b', 'S1__c' : '123', 'S1__test_pypelines': '123'})            
+
+    def test_typed_getvalue(self):
+        config = io.StringIO('''
+        [S1]
+        a_json=[1, 2, 3]
+        ''')
+        d = config2dict(config)
+        self.assertEqual(d, {'S1__a_json' : [1, 2, 3]})            
+
+
 
 if __name__ == "__main__":
     unittest.main()
