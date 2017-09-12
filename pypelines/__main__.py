@@ -4,7 +4,7 @@ import argparse
 import sys
 import os
 import time
-from configparser import SafeConfigParser
+from config import config2dict
 
 figlet_txt = """
     ____                   ___                
@@ -14,16 +14,28 @@ figlet_txt = """
 /_/    \__, / .___/\___/_/_/_/ /_/\___/____/  
       /____/_/                                
 """
-def config2dict(config_file):
-    log.info("Load configs from file:" + str(config_file))
-    confparser = SafeConfigParser(defaults=os.environ) #this is dangerous ==> all sys env var are set up in default section
-    confparser.read(config_file)
-    sections = confparser.sections()
-    sections.append('DEFAULT')
-    variables_cmdline = {s:dict(confparser.items(s)) for s in sections}
-    variables_cmdline = {**variables_cmdline, **dict(confparser.items('DEFAULT'))} #default overwrite variables_cmdline
-    #log.info("Params found in files: " + str(variables_cmdline))
-    return variables_cmdline
+def merge_two_dicts(x, y):
+    """Given two dicts, merge them into a new dict as a shallow copy."""
+    z = x.copy()
+    z.update(y)
+    return z
+
+# def config2dict(config_file, interpolate_envvar=False):
+#     log.info("Load configs from file:" + str(config_file))
+#     if interpolate_envvar:
+#         #this is dangerous ==> all sys env var are set up in default section
+#         confparser = SafeConfigParser(defaults=os.environ) 
+#     else:
+#         confparser = RawConfigParser()
+
+#     confparser.read(config_file)
+#     sections = confparser.sections()
+#     sections.append('DEFAULT')
+#     variables_conffile_all_sections = {s:dict(confparser.items(s)) for s in sections}
+#     #variables_cmdline = {**variables_cmdline, **dict(confparser.items('DEFAULT'))} #default overwrite variables_cmdline, py35 only
+#     #variables_cmdline = merge_two_dicts(variables_cmdline, **dict(confparser.items('DEFAULT')))
+#     #log.info("Params found in files: " + str(variables_cmdline))
+#     return variables_conffile_all_sections
 
 def main(inputfile, pypelines_variables):
     t1 = time.time()
@@ -38,6 +50,7 @@ if __name__ == '__main__':
     parser.add_argument("-e", "--envconfig", nargs="?", default=None, help="Name of environment variable containing parameter as name1=value1;name2=value2;... as separator (';') use default path separator (e.g. ':' on UNIX, ';' on Windows) ")
     parser.add_argument("-p", "--params", nargs="?", default=None, help="Parameters as name1=value1;name2=value2;... ")
     parser.add_argument("-c", "--configfile", nargs="?", default=None, help="Config file filepath having Python configparser syntax")
+    parser.add_argument("-i", "--interpolate", nargs="?", default=False, help="Interpolate config file with environment variable using %(<varname>)s syntax")
 
     parser.add_argument("inputfile", help="pypelines script")
 
@@ -59,13 +72,7 @@ if __name__ == '__main__':
 
     variables_cmdline = {}
     variables_env = {}
-    # if args.parameters is not None:
-    #     if os.path.exists(args.parameters):
-    #         variables_cmdline = config2dict(args.parameters)
-    #     else:
-    #         var = args.parameters.split(os.pathsep)
-    #         variables_cmdline = dict(s.split('=') for s in var)
-    # #log.debug("Parameters from cmd line: " + str(variables_cmdline))
+    variables_configfile = {}
 
     #priority in case of param with same name cmdline, configfile, env var
     #env var 
@@ -81,7 +88,8 @@ if __name__ == '__main__':
     #config file
     if args.configfile is not None:
         if os.path.exists(args.configfile):
-            variables_configfile = config2dict(args.configfile)
+            #variables_configfile = config2dict(args.configfile, args.interpolate)
+            variables_configfile = config2dict(args.configfile, args.interpolate, args.interpolateenvvar, flat=True)
             #log.debug("Parameters from config file line: " + str(variables_configfile))
         else:
             log.fatal("Cannot find config file on path: " + str(args.configfile))
@@ -90,19 +98,23 @@ if __name__ == '__main__':
     #cmd line
     if args.params is not None:
         try:
-            var = args.params.split(os.pathsep)
-            variables_cmdline = dict(s.split('=') for s in var)
-            log.debug("Parameters from cmd line: " + str(variables_cmdline))
+            if args.params.strip() != "":
+                var = args.params.split(os.pathsep)
+                variables_cmdline = dict(s.split('=') for s in var)
+                log.debug("Parameters from cmd line: " + str(variables_cmdline))
         except Exception as ex:
             log.fatal("Cannot parse command line parameters")
             sys.exit(3)
 
 
     #union param dicts
-    #variables = dict(variables_cmdline, **variables_env)
+    
     #caution: py3.5 only
-    #pypelines_pars = {**variables_cmdline, **variables_env} #env overwrite cmdline
-    pypelines_pars = {**variables_env, **variables_configfile}
-    pypelines_pars = {**pypelines_pars, **variables_cmdline}
+    #pypelines_pars = {**variables_env, **variables_configfile}
+    #pypelines_pars = {**pypelines_pars, **variables_cmdline}
+
+    pypelines_pars = merge_two_dicts(variables_env, variables_configfile)
+    pypelines_pars = merge_two_dicts(pypelines_pars, variables_cmdline)
+
     #print(__vars)
     main(args.inputfile, pypelines_pars)
