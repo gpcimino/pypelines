@@ -4,7 +4,7 @@ import argparse
 import sys
 import os
 import time
-from .config import config2dict
+from .config import config2dict, merge_two_dicts
 
 figlet_txt = """
     ____                   ___                
@@ -72,10 +72,11 @@ if __name__ == '__main__':
     if args.configfile is not None:
         if os.path.exists(args.configfile):
             #variables_configfile = config2dict(args.configfile, args.interpolate)
+            env_var_interp = []
             if args.interpolateenvvar is not None:
                 env_var_interp = split_name_value_pairs(args.interpolateenvvar) 
-            variables_configfile = config2dict(args.configfile, args.interpolate, env_var_interp, flat=True)
-            #log.debug("Parameters from config file line: " + str(variables_configfile))
+            variables_configfile = config2dict(args.configfile, args.interpolate, env_var_interp, flat=False)
+            log.debug("Parameters from config file: " + str(variables_configfile))
         else:
             log.fatal("Cannot find config file on path: " + str(args.configfile))
             sys.exit(2)
@@ -97,6 +98,4 @@ if __name__ == '__main__':
     #pypelines_pars = {**pypelines_pars, **variables_cmdline}
     pypelines_pars = merge_two_dicts(variables_env, variables_configfile)
     pypelines_pars = merge_two_dicts(pypelines_pars, variables_cmdline)
-
-    #print(__vars)
     main(args.inputfile, pypelines_pars)

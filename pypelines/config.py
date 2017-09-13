@@ -55,7 +55,6 @@ def config2dict(config_file, interpolate=False, interpolate_envvar=[], flat=True
         confparser.read(config_file)
 
     d = as_dict(confparser, typed=typed)
-    
     #make it flat        
     if flat:
         flat_d = {}
