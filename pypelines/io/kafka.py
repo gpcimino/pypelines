@@ -52,7 +52,7 @@ class KafkaProducer(DAGNode):
         while True:
             try:
                 msg = data
-                msg["timestamp"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+                #msg["timestamp"] = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
                 log.debug("Try to send message to kafka " + str(msg))
                 self._producer.send(self._topic, msg)
                 log.debug("Message sent")
