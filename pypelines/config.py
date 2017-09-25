@@ -34,7 +34,7 @@ def get_value(config, section, name):
 def config2dict(config_file, interpolate=False, interpolate_envvar=[], flat=True, typed=True):
     log = logging.getLogger(__name__)
     log.info("Load configs from file:" + str(config_file))
-    
+    log.debug("interpolate=" + str(interpolate))
     if interpolate:
         if interpolate_envvar is not None:
             #this is dangerous ==> all sys env var are set up in default section

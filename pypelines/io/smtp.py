@@ -58,3 +58,20 @@ class SMTP(DAGNode):
                 log.info("send mail completed without errors")
             except Exception as ex:
                 log.exception("Failure in mail sending to " + ", ".join(all_mail_addr))
+
+
+# def test_smtp(mail_srv_addr, subject, from_address, to_addr, body, mail_srv_port=25):
+#     server = smtplib.SMTP(mail_srv_addr, mail_srv_port)
+#     msg = MIMEText(body)
+#     msg['Subject'] = subject
+#     msg['From'] = from_address
+#     msg['To'] = to_addr
+#     server.set_debuglevel(0)
+#     print("send emails from: " + str(from_address))
+#     print("send emails to single receiver: " + str(to_addr))
+#     print("subject: " + str(subject))
+#     server.sendmail(from_address, to_addr, msg.as_string())
+#     server.quit()
+#     print("send mail completed without errors")
+    
+    

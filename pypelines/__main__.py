@@ -33,8 +33,8 @@ if __name__ == '__main__':
     parser.add_argument("-e", "--envconfig", nargs="?", default=None, help="Name of environment variable containing parameter as name1=value1"  + sep + "name2=value2"  + sep + "...")
     parser.add_argument("-p", "--params", nargs="?", default=None, help="Parameters as name1=value1"  + sep + "name2=value2"  + sep + "... ")
     parser.add_argument("-c", "--configfile", nargs="?", default=None, help="Config file path having Python configparser syntax")
-    parser.add_argument("-i", "--interpolate", nargs="?", default=False, help="Interpolate config file values, i.e. values may contain format strings which refer to other values using %(<varname>)s syntax")
-    parser.add_argument("-n", "--interpolateenvvar", nargs="?", default=None, help="Interpolate config file with environment variables listed using same sysntax as -i")
+    parser.add_argument("-i", "--interpolate", action='store_true', help="Interpolate config file values, i.e. values may contain format strings which refer to other values using %(<varname>)s syntax")
+    parser.add_argument("-n", "--interpolateenvvar", nargs="?", default=None, help="Interpolate config file with environment variables listed using same syntax as -e")
 
     parser.add_argument("inputfile", help="pypelines script")
 
