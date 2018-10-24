@@ -1,3 +1,5 @@
+NOTE: I no longer maintain this project, I moved all my pipelines to RxPY: https://github.com/ReactiveX/RxPY
+
 Quick Start
 ===========
 
